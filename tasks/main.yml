@@ -1,0 +1,14 @@
+- name: Read existing domains
+  command: uberspace mail domain list
+  register: uberspace_mail_domain_result
+  failed_when: uberspace_mail_domain_result.rc != 0
+  changed_when: false
+
+- name: Update state of domains
+  when: 
+    - item.domain not in uberspace_mail_domain_result.stdout_lines
+  command: "uberspace mail domain 
+      {{ 'add' if (item.state | default('present')).lower() == 'present' else '' }}
+      {{ 'del' if (item.state | default('present')).lower() == 'absent' else '' }}
+      $(idn {{ item.domain }})"
+  loop: "{{ domains + ([{'domain': domain, 'state': state}] if domain else []) }}"
