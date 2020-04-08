@@ -7,7 +7,7 @@
 - name: Update state of domains
   when: 
     - item.domain not in uberspace_mail_domain_result.stdout_lines
-  command: "uberspace mail domain 
+  shell: "uberspace mail domain 
       {{ 'add' if (item.state | default('present')).lower() == 'present' else '' }}
       {{ 'del' if (item.state | default('present')).lower() == 'absent' else '' }}
       $(idn {{ item.domain }})"
